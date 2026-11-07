@@ -29,7 +29,7 @@ Use what this session actually has. Check the available skills, connectors and t
 | Public web research, docs | Web search/fetch, a built-in browser, or a deep-research skill for long reports |
 | Scheduling social posts, reading analytics | The scheduling or analytics connector the owner has connected |
 | Work at a given time or on a repeat | Scheduled tasks / schedule skill; a loop skill for in-session repetition |
-| Code: new projects, fixes | Write it, then run a code-review or security-review skill; ask another coding agent for a second opinion when stuck |
+| Code: new projects, fixes | Write it, then run a code-review or security-review skill, and always get Codex as a teammate (see 3a) |
 | Video, audio, music assembly | The owner's own scripts and ffmpeg; original or licensed music only |
 | Thumbnails, posters, images | A canvas/design skill |
 | Reports or docs to share | A docs skill, or docx/pdf/pptx/xlsx when a file format is asked for |
@@ -40,6 +40,32 @@ Use what this session actually has. Check the available skills, connectors and t
 | Every project built with Claude Code, from the first step | `project-audit-log` (always on, never skipped) |
 
 Run long independent work (rendering, generation, research) in the background and keep going with other steps.
+
+## 3a. Use Codex as a teammate whenever possible
+
+The owner wants OpenAI Codex to help on every task where it can. You stay in charge: you plan, give Codex well-scoped jobs, check what it returns, and decide. Codex is a second engineer, not the boss.
+
+**How to call it** (use the first that works in this session):
+1. Codex plugin commands (`codex@openai-codex`), via the Skill tool or as slash commands:
+   - `/codex:review` (read-only review; `--base main` for a branch) and `/codex:adversarial-review <focus>` to challenge a design or hunt for risks.
+   - `/codex:rescue <task>` to hand Codex an investigation or fix; `--background` for long jobs, then `/codex:status`, `/codex:result`, `/codex:cancel`.
+2. The Codex CLI directly from the shell: `codex exec "<task>"` (run long jobs in the background).
+3. If Codex is not installed or not signed in, run `/codex:setup` to check, tell the owner the one step they need (usually `codex login`), and carry on without it. Never sign in for them.
+
+**When to use it:**
+- Every code change: run `/codex:review` before calling the work done, and fix or answer each finding.
+- Design decisions, security, payments, personal data, AI features: add `/codex:adversarial-review` focused on that risk.
+- Stuck after two failed attempts, flaky tests, failing builds: `/codex:rescue`.
+- Independent coding work that can run in parallel (tests, refactors, a second module): give it to Codex in the background while you do another part.
+- Compliance work: ask Codex to review the code-side findings of `gdpr-compliance` and `eu-ai-act-compliance` (data flows, deletion, logging).
+- Non-code work (research, writing, planning): use Codex only when a second opinion clearly helps.
+
+**Rules:**
+- Give Codex clear, small tasks with the files and the expected result. Never pass it passwords, keys, tokens or real customer data.
+- Check Codex's changes and claims yourself (read the diff, run the tests) before accepting them. If you and Codex disagree, say so to the owner with both views and your recommendation.
+- Codex usage counts against the owner's ChatGPT/OpenAI limits. If a limit is hit, continue without it and say so.
+- Record Codex's involvement in the project audit log (`project-audit-log`): what it was asked, what it changed, what you accepted.
+- In the final summary, say what Codex did.
 
 ## 3b. Build specialist agents (skills) when they are missing
 
@@ -77,4 +103,5 @@ Defaults when the owner has not said otherwise:
 - "Act as my CEO: what should we do today?" → read status, then a 3–5 step plan, then execute the parts Claude can do.
 - "New project idea → video → post it on all channels this week" → split into build, record, edit, schedule per channel, and route each part.
 - "Pick up where we left off" → read the pending list and continue the first unblocked item.
+- "Build this feature" → plan, write it, `/codex:review`, fix findings, tests, audit-log entry noting Codex's part.
 - "We keep doing X and there is no skill for it" → check the installed skills, create a narrow `x-specialist` skill, record it in `SKILLS`, then use it.
